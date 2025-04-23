@@ -46,6 +46,7 @@ def run_as_sagemaker_job(
     invoke_args_examples_file: Union[Path, str],
     s3_output_path: str = None,
     wait: bool = False, 
+    sagemaker_session: sagemaker.Session = sagemaker.Session(),
     cold_start_delay: int = 0,
     memory_sizes: List[int] = [1024, 2048, 3072, 4096, 5120, 6144],
     stability_benchmark_invocations: int = 1000,
@@ -64,7 +65,7 @@ def run_as_sagemaker_job(
 
     sm_job_input_dir = "/opt/ml/processing/input/data"
     sm_job_output_dir = "/opt/ml/processing/output/"
-    sm_session = sagemaker.Session()
+    sm_session = sagemaker_session
     region = sm_session.boto_region_name
    
     job_args = args_constructor(benchmark_args, sm_job_input_dir, sm_job_output_dir)
@@ -75,6 +76,7 @@ def run_as_sagemaker_job(
         instance_type="ml.m5.large",
         instance_count=1,
         base_job_name="sagemaker-serverless-inf-bench",
+        sagemaker_session=sm_session,
         env={"AWS_DEFAULT_REGION": region}
     )
 
